@@ -1,0 +1,31 @@
+name: change_env
+
+on:
+  schedule:
+    - cron: 15 * 1 * *
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      
+      - name: Setup JDK 11 for Sonar Cloud
+        uses: actions/setup-java@v1
+        with:
+            java-version: 11
+      
+      - name: Maven Build
+        run: mvn clean install -DskipTests=true
+      
+  deploy:
+    environment: PROD
+    needs: build
+    name: Deployment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deployment 
+        run: echo Run PROD deployment.
