@@ -1,8 +1,10 @@
 name: change_env
 
 on:
-  schedule:
-    - cron: 15 * 1 * *
+  push:
+    branches:
+      - main
+      - '**'
   workflow_dispatch:
 
 jobs:
@@ -20,12 +22,25 @@ jobs:
       
       - name: Maven Build
         run: mvn clean install -DskipTests=true
-      
+ 
+  test:
+    environment: PROD1
+    needs: build
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test 
+        run: echo Run PROD deployment.      
+
   deploy:
     environment: PROD
-    needs: build
+    needs: test
     name: Deployment
     runs-on: ubuntu-latest
     steps:
       - name: Deployment 
         run: echo Run PROD deployment.
+
+
+
+  
